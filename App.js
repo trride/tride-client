@@ -1,6 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Card } from "react-native-elements";
+
 export default class App extends React.Component {
   state = {
     lat: 0,
@@ -64,18 +66,20 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          Lat: {this.state.lat}, Long: {this.state.long}
-        </Text>
-        <Text>
-          Last updated: {this.state.lastUpdated}, Times Updated:{" "}
-          {this.state.timesUpdated}
-        </Text>
-        {this.state.error ? (
-          <Text>{this.state.error}</Text>
-        ) : (
-          <Text>All good</Text>
-        )}
+        <Card>
+          <Text>
+            Lat: {this.state.lat}, Long: {this.state.long}
+          </Text>
+          <Text>
+            Last updated: {this.state.lastUpdated}, Times Updated:{" "}
+            {this.state.timesUpdated}
+          </Text>
+          {this.state.error ? (
+            <Text>{this.state.error}</Text>
+          ) : (
+            <Text>All good</Text>
+          )}
+        </Card>
       </View>
     );
   }
