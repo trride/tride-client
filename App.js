@@ -1,7 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
+import { StyleSheet, Text, View, TextInput, TouchableHighlight } from "react-native";
+import emails from './mail';
 import { Card } from "react-native-elements";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class App extends React.Component {
   state = {
@@ -10,7 +11,8 @@ export default class App extends React.Component {
     lastUpdated: Date.now(),
     timesUpdated: 0,
     error: "",
-    prices: {}
+    prices: {},
+    searchTerm: ''
   };
   constructor(props) {
     super(props);
@@ -50,6 +52,7 @@ export default class App extends React.Component {
         timesUpdated: prevState.timesUpdated + 1
       };
     }, this.fetchPriceToMonas);
+    console.log('this is the state after press updatecoords', this.state)
   }
 
   async fetchPriceToMonas() {
@@ -63,33 +66,101 @@ export default class App extends React.Component {
     });
   }
 
+  searchUpdated(term) {
+   this.setState({ searchTerm: term })
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Card>
-          <Text>
-            Lat: {this.state.lat}, Long: {this.state.long}
+        <View style={styles.container3}>
+          <Text style={{textAlign: 'center', fontSize: 30}}>
+           Saya mau pergi ke
           </Text>
-          <Text>
-            Last updated: {this.state.lastUpdated}, Times Updated:{" "}
-            {this.state.timesUpdated}
-          </Text>
-          {this.state.error ? (
-            <Text>{this.state.error}</Text>
-          ) : (
-            <Text>All good</Text>
-          )}
-        </Card>
+            <TextInput
+              onChangeText={(term) => { this.searchUpdated(term) }}
+              style={styles.searchInput}
+              placeholder="Type here..."
+              />
+        </View>
+
+        <View style={{flex: 0.3}}>
+        <TouchableHighlight underlayColor='white' onPress={() => this.updateCoords()}>
+           <View style={styles.container2}>
+              <Icon name="map-pin" size={15} color="black"/>
+              <Text> Masukan lokasi akuratnya </Text>
+           </View>
+        </TouchableHighlight>
+        </View>
+
+        <View style={{flex: 0.3}}>
+        <TouchableHighlight underlayColor='white'>
+           <View style={styles.container1}>
+              <Icon name="clock-o" size={15} color="black"/>
+              <Text> Dari sejarah </Text>
+           </View>
+        </TouchableHighlight>
+
+        <Text>
+         Lat: {this.state.lat}, Long: {this.state.long}
+         </Text>
+         <Text>
+         Last updated: {this.state.lastUpdated}, Times Updated:{" "}
+         {this.state.timesUpdated}
+         </Text>
+         
+        </View>
       </View>
     );
   }
 }
 
+
+// <Card>
+//   <Text>
+//     Lat: {this.state.lat}, Long: {this.state.long}
+//   </Text>
+//   <Text>
+//     Last updated: {this.state.lastUpdated}, Times Updated:{" "}
+//     {this.state.timesUpdated}
+//   </Text>
+//   {this.state.error ? (
+//     <Text>{this.state.error}</Text>
+//   ) : (
+//     <Text>All good</Text>
+//   )}
+// </Card>
 const styles = StyleSheet.create({
   container: {
+    marginTop: 30,
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: '#fff',
+    justifyContent: 'flex-start'
+  },
+  container1: {
+    flex: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  container3: {
+    flex: 0.3,
+    justifyContent: 'center'
+    // alignItems: 'center'
+  },
+  container2: {
+    flex: 0.2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  searchInput:{
+    padding: 10,
+    marginLeft: 32
   }
 });
+
+// flex: 1,
+// backgroundColor: "#fff",
+// alignItems: "center",
+// justifyContent: "center"
