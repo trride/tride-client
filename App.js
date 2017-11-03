@@ -1,7 +1,14 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity
+} from "react-native";
 
 import { Card } from "react-native-elements";
+import { debouncedFindPOI, findPOI } from "./util/tride";
 
 export default class App extends React.Component {
   state = {
@@ -10,16 +17,19 @@ export default class App extends React.Component {
     lastUpdated: Date.now(),
     timesUpdated: 0,
     error: "",
-    prices: {}
+    prices: {},
+    searchTerm: "",
+    searchResult: [],
+    estimates: []
   };
   constructor(props) {
     super(props);
     this.updateCoords = this.updateCoords.bind(this);
-    this.fetchPriceToMonas = this.fetchPriceToMonas.bind(this);
+    this.handleChangeText = this.handleChangeText.bind(this);
+    this.handleSelectSuggestion = this.handleSelectSuggestion.bind(this);
   }
 
   componentDidMount() {
-    // navigator.geolocation.getCurrentPosition(this.updateCoords);
     this.watcher =
       this.watcher ||
       navigator.geolocation.watchPosition(
@@ -32,8 +42,6 @@ export default class App extends React.Component {
           distanceFilter: 10
         }
       );
-    // console.log(this.watcher);
-    // console.log("wow");
   }
 
   componentWillUnmount() {
@@ -49,37 +57,97 @@ export default class App extends React.Component {
         lastUpdated: timestamp,
         timesUpdated: prevState.timesUpdated + 1
       };
-    }, this.fetchPriceToMonas);
-  }
-
-  async fetchPriceToMonas() {
-    const { lat, long } = this.state;
-    const res = await fetch(
-      `https://tride-api.now.sh/?start_lat=${lat}&start_long=${long}&end_lat=${-6.175392}&end_long=${106.827153}`
-    );
-    const json = await res.json();
-    this.setState({
-      prices: json
     });
   }
 
+  async handleChangeText(searchTerm) {
+    const { lat, long } = this.state;
+    this.setState({
+      searchTerm
+    });
+    console.log("search term is", searchTerm);
+    const { points, error } = await debouncedFindPOI(lat, long, searchTerm);
+    this.setState({
+      searchResult: error ? [] : points
+    });
+  }
+
+  handleSelectSuggestion(place) {
+    const { lat, long } = this.state;
+    return async () => {
+      this.setState({
+        searchTerm: place.name,
+        searchResult: []
+      });
+      const { coords } = await fetch(
+        `https://tride-api.now.sh/coords?placeid=${place.placeid}`
+      )
+        .then(res => res.json())
+        .catch(err => {
+          console.error(err);
+          return {};
+        });
+      const { estimates } = await fetch(
+        `https://tride-api.now.sh/estimate?start_lat=${lat}&start_long=${long}&end_lat=${coords.latitude}&end_long=${coords.longitude}`
+      )
+        .then(res => res.json())
+        .catch(err => {
+          console.error(err);
+          return {};
+        });
+      this.setState({ estimates });
+    };
+  }
   render() {
+    const {
+      lat,
+      long,
+      timesUpdated,
+      searchTerm,
+      searchResult,
+      estimates
+    } = this.state;
     return (
       <View style={styles.container}>
-        <Card>
-          <Text>
-            Lat: {this.state.lat}, Long: {this.state.long}
-          </Text>
-          <Text>
-            Last updated: {this.state.lastUpdated}, Times Updated:{" "}
-            {this.state.timesUpdated}
-          </Text>
-          {this.state.error ? (
-            <Text>{this.state.error}</Text>
-          ) : (
-            <Text>All good</Text>
-          )}
-        </Card>
+        <Text>Saya mau ke</Text>
+        <View
+          style={{
+            flexDirection: "row"
+          }}
+        >
+          <TextInput
+            style={{
+              flex: 1,
+              alignItems: "center",
+              alignContent: "center",
+              justifyContent: "center"
+            }}
+            placeholder="..."
+            onChangeText={this.handleChangeText}
+            value={searchTerm}
+          />
+        </View>
+        {searchResult.length > 0 &&
+          searchResult.map(r => (
+            <TouchableOpacity
+              key={r.placeid}
+              onPress={this.handleSelectSuggestion(r)}
+            >
+              <Text>
+                {r.name} - {r.address}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+        {estimates.length > 0 &&
+          estimates.map(e => (
+            <Text>
+              {e.service}: {e.price} {e.cheapest && `(CHEAPEST!)`}
+            </Text>
+          ))}
+        <Text>Current Lat: {lat}</Text>
+        <Text>Current Long: {long}</Text>
+        <Text>Times Updated: {timesUpdated}</Text>
       </View>
     );
   }
