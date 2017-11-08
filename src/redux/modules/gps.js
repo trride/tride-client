@@ -1,7 +1,7 @@
 const SELF_POSITION_CHANGED = "tride/SELF_POSITION_CHANGED";
 const SELF_FAIL_GET_CURRENT_LOCATION = "@tride/SELF_FAIL_GET_CURRENT_LOCATION";
 
-export function updatePosition({ coords, timestamp }) {
+export function updateGPS({ coords, timestamp }) {
   return {
     type: SELF_POSITION_CHANGED,
     coords,
@@ -9,7 +9,7 @@ export function updatePosition({ coords, timestamp }) {
   };
 }
 
-export function gpsErrorHandler() {
+export function errorUpdateGPS() {
   const timestamp = Date.now();
   return {
     type: SELF_FAIL_GET_CURRENT_LOCATION,

@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Text, View } from "react-native";
 
-import { updatePosition, gpsErrorHandler } from "../redux/modules/gps";
+import { updateGPS, errorUpdateGPS } from "../redux/modules/gps";
+
+import MinimalInput from "../components/MinimalInput";
 
 class Reduxed extends Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { handleUpdateGPS, handleErrorUpdatingGPS } = this.props;
     this.watcher =
       this.watcher ||
       navigator.geolocation.watchPosition(
-        data => {
-          dispatch(updatePosition(data));
-        },
-        () => {
-          dispatch(gpsErrorHandler());
-        },
+        handleUpdateGPS,
+        handleErrorUpdatingGPS,
         {
           enableHighAccuracy: true,
           timeout: 20000,
@@ -34,6 +32,11 @@ class Reduxed extends Component {
         <Text>
           latitude = {latitude}, longitude = {longitude}
         </Text>
+        <MinimalInput
+          updateTextInputValue={text => {
+            console.log(`${text} is awesome`);
+          }}
+        />
       </View>
     );
   }
@@ -45,4 +48,14 @@ const mapStateToProps = ({ gps }) => {
   };
 };
 
-export default connect(mapStateToProps)(Reduxed);
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+  handleUpdateGPS: data => {
+    dispatch(updateGPS(data));
+  },
+  handleErrorUpdatingGPS: () => {
+    dispatch(errorUpdateGPS());
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Reduxed);

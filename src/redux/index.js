@@ -4,15 +4,6 @@ import logger from "redux-logger";
 
 import gps from "./modules/gps";
 
-const crashReporter = store => next => action => {
-  try {
-    console.log(action);
-    return next(action);
-  } catch (err) {
-    console.error("Caught an exception!", err);
-    throw err;
-  }
-};
 const middlewares = [thunk];
 
 if (__DEV__) {
