@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 import logger from "redux-logger";
 
 import gps from "./modules/gps";
+import main from "./modules/main";
 
 const middlewares = [thunk];
 
@@ -12,7 +13,8 @@ if (__DEV__) {
 const middleware = applyMiddleware(...middlewares);
 
 const reducer = combineReducers({
-  gps
+  gps,
+  main
 });
 
 const store = createStore(reducer, middleware);

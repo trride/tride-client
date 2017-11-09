@@ -6,9 +6,17 @@ export const findPOI = (lat, long, name) => {
     `http://tride-api.now.sh/points?lat=${lat}&long=${long}&name=${name}`
   )
     .then(res => res.json())
-    .catch(() => {
-      points: [];
-    });
+    .catch(() => ({
+      points: []
+    }));
 };
 
 export const debouncedFindPOI = debounce(findPOI, 1000);
+
+export const findCoordsFromPOI = placeid =>
+  fetch(`https://tride-api.now.sh/coords?placeid=${placeid}`)
+    .then(res => res.json())
+    .catch(err => {
+      console.error(err);
+      return {};
+    });

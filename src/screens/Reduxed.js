@@ -3,8 +3,10 @@ import { connect } from "react-redux";
 import { Text, View } from "react-native";
 
 import { updateGPS, errorUpdateGPS } from "../redux/modules/gps";
+import { getSuggestedPlaces } from "../redux/modules/main";
 
 import MinimalInput from "../components/MinimalInput";
+import SuggestionCards from "../components/SuggestionCards";
 
 class Reduxed extends Component {
   componentDidMount() {
@@ -21,30 +23,38 @@ class Reduxed extends Component {
           distanceFilter: 10
         }
       );
+    console.log(this.props);
   }
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watcher);
   }
   render() {
-    const { gps: { coords: { latitude, longitude } } } = this.props;
+    const {
+      gps: { coords: { latitude, longitude } },
+      main: { searchBoxText, suggestedPlaces },
+      dispatch
+    } = this.props;
     return (
       <View>
         <Text>
           latitude = {latitude}, longitude = {longitude}
         </Text>
         <MinimalInput
-          updateTextInputValue={text => {
-            console.log(`${text} is awesome`);
+          value={searchBoxText}
+          handleChangeText={text => {
+            dispatch(getSuggestedPlaces(latitude, longitude, text));
           }}
         />
+        <SuggestionCards suggestedPlaces={suggestedPlaces} />
       </View>
     );
   }
 }
 
-const mapStateToProps = ({ gps }) => {
+const mapStateToProps = ({ gps, main }) => {
   return {
-    gps
+    gps,
+    main
   };
 };
 
