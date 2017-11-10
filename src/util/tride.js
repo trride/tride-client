@@ -33,3 +33,6 @@ export const getPriceComparisons = (start, end) =>
       `start_lat=${start.latitude}&start_long=${start.longitude}` +
       `&end_lat=${end.latitude}&end_long=${end.longitude}`
   );
+
+export const reverseGeo = ({ latitude, longitude }) =>
+  tride(`location?latitude=${latitude}&longitude=${longitude}`);

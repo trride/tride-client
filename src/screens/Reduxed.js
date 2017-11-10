@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Text, ScrollView } from "react-native";
+import { Text, ScrollView, Keyboard } from "react-native";
+import styled from "styled-components/native";
 
-import { updateGPS, errorUpdateGPS } from "../redux/modules/gps";
+import { reverseGeo } from "../util/tride";
+import { handleUpdateGPS, errorUpdateGPS } from "../redux/modules/gps";
 import {
   getSuggestedPlaces,
   selectPlaceFromSuggestions
@@ -13,19 +15,17 @@ import SuggestionCards from "../components/SuggestionCards";
 
 class Reduxed extends Component {
   componentDidMount() {
-    const { handleUpdateGPS, handleErrorUpdatingGPS } = this.props;
+    const { dispatch } = this.props;
+    const onChangeGPS = text => dispatch(handleUpdateGPS(text));
+    const onErrorGPS = () => dispatch(errorUpdateGPS());
     this.watcher =
       this.watcher ||
-      navigator.geolocation.watchPosition(
-        handleUpdateGPS,
-        handleErrorUpdatingGPS,
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 1000,
-          distanceFilter: 10
-        }
-      );
+      navigator.geolocation.watchPosition(onChangeGPS, onErrorGPS, {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000,
+        distanceFilter: 10
+      });
     console.log(this.props);
   }
   componentWillUnmount() {
@@ -37,15 +37,19 @@ class Reduxed extends Component {
   }
   render() {
     const {
-      gps: { coords: { latitude, longitude } },
-      main: { searchBoxText, suggestedPlaces },
-      dispatch
+      gps: { coords: { latitude, longitude }, name },
+      main: { searchBoxText, suggestedPlaces, selectedPlace, priceComparisons },
+      dispatch,
+      style
     } = this.props;
     console.log(this.props);
     return (
-      <ScrollView>
+      <ScrollView onPress={Keyboard.dismiss} style={style}>
         <Text>
-          latitude = {latitude}, longitude = {longitude}
+          Self position:{" "}
+          {name.notAsked
+            ? `latitude = ${latitude}, longitude = ${longitude}`
+            : name.data}
         </Text>
         <MinimalInput
           value={searchBoxText}
@@ -61,6 +65,17 @@ class Reduxed extends Component {
             };
           }}
         />
+        <Text>
+          {selectedPlace.notAsked
+            ? ""
+            : "destination: " +
+              (selectedPlace.isLoading
+                ? "Loading coordinates of selected place"
+                : selectedPlace.hasError
+                  ? "Coordinates of destination can't be fetched"
+                  : selectedPlace.data.address)}
+        </Text>
+        <Text>{priceComparisons.notAsked ? "" : "price here"}</Text>
       </ScrollView>
     );
   }
@@ -73,14 +88,6 @@ const mapStateToProps = ({ gps, main }) => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  dispatch,
-  handleUpdateGPS: data => {
-    dispatch(updateGPS(data));
-  },
-  handleErrorUpdatingGPS: () => {
-    dispatch(errorUpdateGPS());
-  }
-});
+const StyledApp = styled(Reduxed)`background: white;`;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Reduxed);
+export default connect(mapStateToProps)(StyledApp);
