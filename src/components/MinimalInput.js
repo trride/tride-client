@@ -22,5 +22,6 @@ class MinimalInput extends Component {
 
 export default styled(MinimalInput)`
   color: black;
-  width: 100%;
+  width: 55%;
+  alignSelf: center;
 `;

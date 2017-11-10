@@ -6,10 +6,11 @@ import store from "./redux";
 
 import MainMenu from "./screens/MainMenu";
 import Reduxed from "./screens/Reduxed";
+import InitialScreen from "./screens/InitialScreen"
 
 const AppNavigator = StackNavigator({
-  // MainMenuScreen: { screen: MainMenu }
-  MainMenuScreen: { screen: Reduxed }
+  InitialScreen: { screen: InitialScreen },
+  MainMenuScreen: { screen: Reduxed },
 });
 
 export default class App extends React.Component {
