@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Text, View } from "react-native";
+import { Text, ScrollView } from "react-native";
 
 import { updateGPS, errorUpdateGPS } from "../redux/modules/gps";
-import { getSuggestedPlaces } from "../redux/modules/main";
+import {
+  getSuggestedPlaces,
+  selectPlaceFromSuggestions
+} from "../redux/modules/main";
 
 import MinimalInput from "../components/MinimalInput";
 import SuggestionCards from "../components/SuggestionCards";
@@ -28,14 +31,19 @@ class Reduxed extends Component {
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watcher);
   }
+  componentDidCatch(err) {
+    console.log(err);
+    return <Text>error bro</Text>;
+  }
   render() {
     const {
       gps: { coords: { latitude, longitude } },
       main: { searchBoxText, suggestedPlaces },
       dispatch
     } = this.props;
+    console.log(this.props);
     return (
-      <View>
+      <ScrollView>
         <Text>
           latitude = {latitude}, longitude = {longitude}
         </Text>
@@ -45,8 +53,15 @@ class Reduxed extends Component {
             dispatch(getSuggestedPlaces(latitude, longitude, text));
           }}
         />
-        <SuggestionCards suggestedPlaces={suggestedPlaces} />
-      </View>
+        <SuggestionCards
+          suggestedPlaces={suggestedPlaces}
+          onCardTap={placeid => {
+            return () => {
+              dispatch(selectPlaceFromSuggestions(placeid));
+            };
+          }}
+        />
+      </ScrollView>
     );
   }
 }

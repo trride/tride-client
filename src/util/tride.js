@@ -1,22 +1,35 @@
 import debounce from "p-debounce";
 
-export const findPOI = (lat, long, name) => {
-  console.log(`finding POI with name ${name}`);
-  return fetch(
-    `http://tride-api.now.sh/points?lat=${lat}&long=${long}&name=${name}`
-  )
-    .then(res => res.json())
-    .catch(() => ({
-      points: []
-    }));
+const baseURL = "https://tride-api.now.sh/";
+
+const tride = (endpoint, opts = {}) => {
+  const url = `${baseURL}${endpoint}`;
+  console.log(url);
+  return fetch(url, opts)
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("Network response was not ok.");
+    })
+    .catch(err => {
+      console.log("errored");
+      return { error: { message: err.message } };
+    });
 };
 
-export const debouncedFindPOI = debounce(findPOI, 1000);
+export const findPOI = (lat, long, name) =>
+  name === ""
+    ? Promise.resolve({ points: [] })
+    : tride(`points?lat=${lat}&long=${long}&name=${name}`);
 
-export const findCoordsFromPOI = placeid =>
-  fetch(`https://tride-api.now.sh/coords?placeid=${placeid}`)
-    .then(res => res.json())
-    .catch(err => {
-      console.error(err);
-      return {};
-    });
+export const debouncedFindPOI = debounce(findPOI, 500);
+
+export const findCoordsFromPOI = placeid => tride(`coords?placeid=${placeid}`);
+
+export const getPriceComparisons = (start, end) =>
+  tride(
+    `estimate?` +
+      `start_lat=${start.latitude}&start_long=${start.longitude}` +
+      `&end_lat=${end.latitude}&end_long=${end.longitude}`
+  );
