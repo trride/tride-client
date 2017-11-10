@@ -44,7 +44,11 @@ class Reduxed extends Component {
     } = this.props;
     console.log(this.props);
     return (
-      <ScrollView onPress={Keyboard.dismiss} style={style}>
+      <ScrollView
+        onPress={Keyboard.dismiss}
+        onScroll={Keyboard.dismiss}
+        style={style}
+      >
         <Text>
           Self position:{" "}
           {name.notAsked
@@ -75,7 +79,19 @@ class Reduxed extends Component {
                   ? "Coordinates of destination can't be fetched"
                   : selectedPlace.data.address)}
         </Text>
-        <Text>{priceComparisons.notAsked ? "" : "price here"}</Text>
+        <Text>
+          {priceComparisons.notAsked
+            ? ""
+            : priceComparisons.isLoading
+              ? "Loading prices"
+              : priceComparisons.hasError
+                ? "Error fetching prices. Retry?"
+                : priceComparisons.data.map(e => (
+                    <Text>
+                      {e.service}: {e.price} {e.cheapest && `(CHEAPEST!)`}
+                    </Text>
+                  ))}
+        </Text>
       </ScrollView>
     );
   }

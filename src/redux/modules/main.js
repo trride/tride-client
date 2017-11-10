@@ -60,11 +60,29 @@ export function updatePriceComparisons(estimates) {
   return {
     type: UPDATE_PRICE_COMPARISONS,
     priceComparisons: {
-      notAsked: false,
-      isLoading: false,
-      hasError: false,
       data: estimates
     }
+  };
+}
+
+export function failingPriceComparisons(err) {
+  return {
+    type: UPDATE_PRICE_COMPARISONS_ERROR,
+    priceComparisons: {
+      hasError: err
+    }
+  };
+}
+
+export function loadingPriceComparisons() {
+  return {
+    type: UPDATE_PRICE_COMPARISONS_LOADING
+  };
+}
+
+export function dismissPriceComparisons() {
+  return {
+    type: UPDATE_PRICE_COMPARISONS_DISMISS
   };
 }
 
@@ -144,6 +162,8 @@ export function getSuggestedPlaces(latitude, longitude, text) {
   return async dispatch => {
     dispatch(updateSearchBoxText(text));
     dispatch(loadingSuggestedPlaces());
+    dispatch(dismissSelectedPlace());
+    dispatch(dismissPriceComparisons());
     const { points, error } = await debouncedFindPOI(latitude, longitude, text);
     if (text === "") {
       return dispatch(dismissSuggestedPlaces());
@@ -173,16 +193,20 @@ export function selectPlaceFromSuggestions(place) {
           longitude: coords.longitude
         })
       );
-      const { gps } = getState();
-      const { estimates, error } = await getPriceComparisons(
-        gps.coords,
-        coords
-      );
-      if (error) {
-        console.error(error);
-      } else {
-        dispatch(updatePriceComparisons(estimates));
-      }
+      dispatch(comparePrices(coords));
+    }
+  };
+}
+
+export function comparePrices(to) {
+  return async (dispatch, getState) => {
+    const { gps: { coords } } = getState();
+    dispatch(loadingPriceComparisons());
+    const { estimates, error } = await getPriceComparisons(coords, to);
+    if (error) {
+      dispatch(failingPriceComparisons(error));
+    } else {
+      dispatch(updatePriceComparisons(estimates));
     }
   };
 }
@@ -253,19 +277,45 @@ export default function reducer(state = initialState, action) {
         suggestedPlaces: {
           ...initialState.suggestedPlaces,
           notAsked: false,
-          isLoading: false,
           ...action.suggestedPlaces
         }
       };
     case UPDATE_SUGGESTED_PLACES_DISMISS:
       return {
         ...state,
-        suggestedPlaces: { ...initialState.suggestedPlaces }
+        suggestedPlaces: initialState.suggestedPlaces
       };
     case UPDATE_PRICE_COMPARISONS:
       return {
         ...state,
-        priceComparisons: action.priceComparisons
+        priceComparisons: {
+          ...initialState.priceComparisons,
+          notAsked: false,
+          ...action.priceComparisons
+        }
+      };
+    case UPDATE_PRICE_COMPARISONS_LOADING:
+      return {
+        ...state,
+        priceComparisons: {
+          ...initialState.priceComparisons,
+          notAsked: false,
+          isLoading: true
+        }
+      };
+    case UPDATE_PRICE_COMPARISONS_ERROR:
+      return {
+        ...state,
+        priceComparisons: {
+          ...initialState.priceComparisons,
+          notAsked: false,
+          ...action.priceComparisons
+        }
+      };
+    case UPDATE_PRICE_COMPARISONS_DISMISS:
+      return {
+        ...state,
+        priceComparisons: initialState.priceComparisons
       };
     default:
       return state;
