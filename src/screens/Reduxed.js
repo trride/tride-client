@@ -1,13 +1,20 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Text, ScrollView, Keyboard } from "react-native";
+import {
+  Text,
+  ScrollView,
+  Keyboard,
+  TouchableOpacity,
+  View
+} from "react-native";
 import styled from "styled-components/native";
 
 import { reverseGeo } from "../util/tride";
 import { handleUpdateGPS, errorUpdateGPS } from "../redux/modules/gps";
 import {
   getSuggestedPlaces,
-  selectPlaceFromSuggestions
+  selectPlaceFromSuggestions,
+  findMyRide
 } from "../redux/modules/main";
 
 import MinimalInput from "../components/MinimalInput";
@@ -69,6 +76,10 @@ class Reduxed extends Component {
             };
           }}
         />
+        {/* <OrderButtons
+          selectedPlace={selectedPlace}
+          priceComparisons={priceComparisons}
+        /> */}
         <Text>
           {selectedPlace.notAsked
             ? ""
@@ -79,19 +90,43 @@ class Reduxed extends Component {
                   ? "Coordinates of destination can't be fetched"
                   : selectedPlace.data.address)}
         </Text>
-        <Text>
-          {priceComparisons.notAsked
-            ? ""
-            : priceComparisons.isLoading
-              ? "Loading prices"
-              : priceComparisons.hasError
-                ? "Error fetching prices. Retry?"
-                : priceComparisons.data.map(e => (
-                    <Text>
-                      {e.service}: {e.price} {e.cheapest && `(CHEAPEST!)`}
-                    </Text>
-                  ))}
-        </Text>
+        <View>
+          {priceComparisons.notAsked ? (
+            <View />
+          ) : priceComparisons.isLoading ? (
+            <Text>Loading prices</Text>
+          ) : priceComparisons.hasError ? (
+            <Text>Error fetching prices. Retry?</Text>
+          ) : (
+            priceComparisons.data.map((e, i) => (
+              <View key={i}>
+                <Text>
+                  {e.service}: {e.price} {e.cheapest && `(CHEAPEST!)`}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    dispatch(
+                      findMyRide({
+                        service: e.service,
+                        key: e.requestKey.key
+                      })
+                    );
+                  }}
+                >
+                  <Text>Order</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+        </View>
+        <View>
+          {!!rideId.data &&
+            !rideStatus.notAsked && (
+              <View>
+                <Text>ride id {rideId.data}</Text>
+              </View>
+            )}
+        </View>
       </ScrollView>
     );
   }

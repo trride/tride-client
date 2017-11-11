@@ -36,3 +36,23 @@ export const getPriceComparisons = (start, end) =>
 
 export const reverseGeo = ({ latitude, longitude }) =>
   tride(`location?latitude=${latitude}&longitude=${longitude}`);
+
+export const manualRide = (service, key, start, end) => {
+  const payload = {
+    requestKey: { key },
+    itinerary: { start, end }
+  };
+  const opts = {
+    method: "POST",
+    body: JSON.stringify(payload)
+  };
+  const services = ["gojek", "grab", "uber"];
+  const lowercaseService = service.toLowerCase();
+  if (!services.includes(lowercaseService)) {
+    return { error: { message: "Service not found" } };
+  } else {
+    return tride(`ride/${lowercaseService}`, opts);
+  }
+};
+
+export const getFastest = (services, itinerary) => {};

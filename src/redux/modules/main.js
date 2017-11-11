@@ -28,6 +28,16 @@ const UPDATE_PRICE_COMPARISONS_ERROR = "@tride/UPDATE_PRICE_COMPARISONS_ERROR";
 const UPDATE_PRICE_COMPARISONS_DISMISS =
   "@tride/UPDATE_PRICE_COMPARISONS_DISMISS";
 
+const REQUEST_RIDE = "@tride/main/REQUEST_RIDE";
+const REQUEST_RIDE_SUCCESS = "@tride/main/REQUEST_RIDE_SUCCESS";
+const REQUEST_RIDE_ERROR = "@tride/main/REQUEST_RIDE_ERROR";
+const REQUEST_RIDE_DISMISS = "@tride/main/REQUEST_RIDE_DISMISS";
+
+const UPDATE_RIDE_STATUS = "@tride/main/UPDATE_RIDE_STATUS";
+const UPDATE_RIDE_STATUS_LOADING = "@tride/main/UPDATE_RIDE_STATUS_LOADING";
+const UPDATE_RIDE_STATUS_ERROR = "@tride/main/UPDATE_RIDE_STATUS_ERROR";
+const UPDATE_RIDE_STATUS_DISMISS = "@tride/main/UPDATE_RIDE_STATUS_DISMISS";
+
 const initialState = {
   selectedPlace: {
     notAsked: true,
@@ -48,10 +58,16 @@ const initialState = {
     data: [],
     hasError: false
   },
+  rideId: {
+    notAsked: true,
+    isLoading: false,
+    data: {},
+    hasError: false
+  },
   rideStatus: {
     notAsked: true,
     isLoading: false,
-    data: null,
+    data: {},
     hasError: false
   }
 };
@@ -158,6 +174,66 @@ export function dismissSuggestedPlaces() {
   };
 }
 
+export function requestRide() {
+  return {
+    type: REQUEST_RIDE
+  };
+}
+
+export function requestRideSuccess(rideId) {
+  return {
+    type: REQUEST_RIDE_SUCCESS,
+    rideId: {
+      data: rideId
+    }
+  };
+}
+
+export function requestRideFail(err) {
+  return {
+    type: REQUEST_RIDE_ERROR,
+    rideId: {
+      hasError: err
+    }
+  };
+}
+
+export function requestRideDismiss() {
+  return {
+    type: REQUEST_RIDE_DISMISS
+  };
+}
+
+export function updateRideStatus(rideStatus) {
+  return {
+    type: UPDATE_RIDE_STATUS,
+    rideStatus: {
+      data: rideStatus
+    }
+  };
+}
+
+export function loadingRideStatus() {
+  return {
+    type: UPDATE_RIDE_STATUS_LOADING
+  };
+}
+
+export function failingRideStatus(err) {
+  return {
+    type: UPDATE_RIDE_STATUS_ERROR,
+    rideStatus: {
+      hasError: err
+    }
+  };
+}
+
+export function dismissRideStatus() {
+  return {
+    type: UPDATE_RIDE_STATUS_DISMISS
+  };
+}
+
 export function getSuggestedPlaces(latitude, longitude, text) {
   return async dispatch => {
     dispatch(updateSearchBoxText(text));
@@ -208,6 +284,16 @@ export function comparePrices(to) {
     } else {
       dispatch(updatePriceComparisons(estimates));
     }
+  };
+}
+
+export function findMyRide({ service, key }) {
+  console.log("finding a ride");
+  return async (dispatch, getState) => {
+    const { gps: { coords }, main: { selectedPlace } } = getState();
+    dispatch(dismissPriceComparisons());
+    dispatch(requestRide());
+    console.log(service, key);
   };
 }
 
@@ -316,6 +402,71 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         priceComparisons: initialState.priceComparisons
+      };
+    case REQUEST_RIDE:
+      return {
+        ...state,
+        rideId: {
+          ...initialState.rideId,
+          notAsked: false,
+          isLoading: true
+        }
+      };
+    case REQUEST_RIDE_SUCCESS:
+      return {
+        ...state,
+        rideId: {
+          ...initialState.rideId,
+          notAsked: false,
+          data: action.rideId.data
+        }
+      };
+    case REQUEST_RIDE_ERROR:
+      return {
+        ...state,
+        rideId: {
+          ...initialState.rideId,
+          notAsked: false,
+          hasError: action.rideId.hasError
+        }
+      };
+    case REQUEST_RIDE_DISMISS:
+      return {
+        ...state,
+        rideId: initialState.rideId
+      };
+
+    case UPDATE_RIDE_STATUS:
+      return {
+        ...state,
+        rideStatus: {
+          ...initialState.rideStatus,
+          notAsked: false,
+          data: action.rideStatus.data
+        }
+      };
+    case UPDATE_RIDE_STATUS_LOADING:
+      return {
+        ...state,
+        rideStatus: {
+          ...initialState.rideStatus,
+          notAsked: false,
+          isLoading: true
+        }
+      };
+    case UPDATE_PRICE_COMPARISONS_ERROR:
+      return {
+        ...state,
+        rideStatus: {
+          ...initialState.rideStatus,
+          notAsked: false,
+          hasError: action.rideStatus.hasError
+        }
+      };
+    case UPDATE_PRICE_COMPARISONS_DISMISS:
+      return {
+        ...state,
+        rideStatus: initialState.rideStatus
       };
     default:
       return state;
