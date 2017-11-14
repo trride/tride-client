@@ -58,9 +58,9 @@ class Reduxed extends Component {
     } = this.props;
     console.log(this.props);
     return (
-      <ScrollView
+      <View
         onPress={Keyboard.dismiss}
-        onScroll={Keyboard.dismiss}
+        // onScroll={Keyboard.dismiss}
         style={style}
       >
         <Text>
@@ -130,7 +130,7 @@ class Reduxed extends Component {
           !!rideStatus.notAsked && (
             <Ride rideId={rideId} rideStatus={rideStatus} />
           )}
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -161,4 +161,4 @@ const mapStateToProps = ({ gps, main }) => {
 
 const StyledApp = styled(Reduxed)`background: white;`;
 
-export default connect(mapStateToProps)(StyledApp);
+export default connect(mapStateToProps)(Reduxed);
