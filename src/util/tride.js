@@ -6,10 +6,11 @@ const tride = (endpoint, opts = {}) => {
   const url = `${baseURL}${endpoint}`;
   console.log(url);
   return fetch(url, opts)
-    .then(res => {
+    .then(async res => {
       if (res.ok) {
         return res.json();
       }
+      console.log(await res.json());
       throw new Error("Network response was not ok.");
     })
     .catch(err => {
@@ -51,7 +52,7 @@ export const manualRide = (service, key, start, end) => {
   if (!services.includes(lowercaseService)) {
     return { error: { message: "Service not found" } };
   } else {
-    return tride(`ride/${lowercaseService}`, opts);
+    return tride(`rides/${lowercaseService}`, opts);
   }
 };
 

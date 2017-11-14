@@ -1,7 +1,9 @@
 const {
   debouncedFindPOI,
   findCoordsFromPOI,
-  getPriceComparisons
+  getPriceComparisons,
+  manualRide,
+  getFastest
 } = require("../../util/tride");
 
 const SELECT_PLACE_FROM_SUGGESTIONS = "@tride/SELECT_PLACE_FROM_SUGGESTIONS";
@@ -293,9 +295,24 @@ export function findMyRide({ service, key }) {
     const { gps: { coords }, main: { selectedPlace } } = getState();
     dispatch(dismissPriceComparisons());
     dispatch(requestRide());
-    console.log(service, key);
+    const { requestId } = await manualRide(
+      service,
+      key,
+      { latitude: coords.latitude, longitude: coords.longitude },
+      {
+        latitude: selectedPlace.data.latitude,
+        longitude: selectedPlace.data.longitude
+      }
+    );
+    dispatch(requestRideSuccess(requestId));
   };
 }
+
+// export function abortRide ({service, requestId}) {
+//   return async (dispatch, getState) => {
+//     const {cancelled} = await
+//   }
+// }
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {

@@ -45,7 +45,14 @@ class Reduxed extends Component {
   render() {
     const {
       gps: { coords: { latitude, longitude }, name },
-      main: { searchBoxText, suggestedPlaces, selectedPlace, priceComparisons },
+      main: {
+        searchBoxText,
+        suggestedPlaces,
+        selectedPlace,
+        priceComparisons,
+        rideId,
+        rideStatus
+      },
       dispatch,
       style
     } = this.props;
@@ -119,16 +126,29 @@ class Reduxed extends Component {
             ))
           )}
         </View>
-        <View>
-          {!!rideId.data &&
-            !rideStatus.notAsked && (
-              <View>
-                <Text>ride id {rideId.data}</Text>
-              </View>
-            )}
-        </View>
+        {!rideId.notAsked &&
+          !!rideStatus.notAsked && (
+            <Ride rideId={rideId} rideStatus={rideStatus} />
+          )}
       </ScrollView>
     );
+  }
+}
+
+import db from "../util/db";
+class Ride extends React.Component {
+  componentDidMount() {
+    console.log(this.props);
+    // const { rideId: { data: rideId } } = this.props;
+    // db.ref(`ride/${rideId}`).on("value", console.log);
+  }
+  componentWillUnmount() {
+    // const { rideId: { data: rideId } } = this.props;
+    // db.ref(`ride/${rideId}`).off("value", console.log);
+  }
+
+  render() {
+    return <Text>Ride status is</Text>;
   }
 }
 
