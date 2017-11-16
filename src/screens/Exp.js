@@ -7,20 +7,29 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import styled from "styled-components/native";
+
+import SelfPosition from "../components/SelfPosition";
+
+const MainMenuScrollView = styled(ScrollView)`background: white;`;
 
 class Exp extends React.Component {
   render() {
-    const { gps: { coords: { latitude, longitude }, name } } = this.props;
+    const {
+      gps: { coords, name },
+      main: {
+        searchBoxText,
+        suggestedPlaces,
+        selectedPlace,
+        priceComparisons,
+        rideId,
+        rideStatus
+      }
+    } = this.props;
     return (
-      <ScrollView>
-        <Text>Scrolling View</Text>
-        <Text>
-          Self position:{" "}
-          {name.notAsked
-            ? `latitude = ${latitude}, longitude = ${longitude}`
-            : name.data}
-        </Text>
-      </ScrollView>
+      <MainMenuScrollView>
+        <SelfPosition coords={coords} name={name} />
+      </MainMenuScrollView>
     );
   }
 }

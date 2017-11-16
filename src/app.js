@@ -11,15 +11,13 @@ import Exp from "./screens/Exp";
 import { handleUpdateGPS, errorUpdateGPS } from "./redux/modules/gps";
 
 const AppNavigator = StackNavigator({
-  // MainMenuScreen: { screen: MainMenu }
-  // MainMenuScreen: { screen: Reduxed }
   MainMenuScreen: { screen: Exp }
 });
 
 class GPS extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
-    const onChangeGPS = text => dispatch(handleUpdateGPS(text));
+    const onChangeGPS = pos => dispatch(handleUpdateGPS(pos));
     const onErrorGPS = () => dispatch(errorUpdateGPS());
     this.watcher =
       this.watcher ||
