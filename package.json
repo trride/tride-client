@@ -19,6 +19,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@shoutem/ui": "^0.21.3",
     "expo": "^21.0.0",
     "firebase": "^4.6.2",
     "p-debounce": "^1.0.0",

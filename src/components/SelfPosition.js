@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { Card } from "react-native-elements";
+import { Text } from "@shoutem/ui";
 import styled from "styled-components/native";
 
 const BoxShadow = styled.View`

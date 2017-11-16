@@ -1,13 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  Text,
-  ScrollView,
-  Keyboard,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { ScrollView, Keyboard, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
+import { Screen } from "@shoutem/ui";
 
 import SelfPosition from "../components/SelfPosition";
 
@@ -27,9 +22,11 @@ class Exp extends React.Component {
       }
     } = this.props;
     return (
-      <MainMenuScrollView>
-        <SelfPosition coords={coords} name={name} />
-      </MainMenuScrollView>
+      <Screen styleName="paper">
+        <ScrollView>
+          <SelfPosition coords={coords} name={name} />
+        </ScrollView>
+      </Screen>
     );
   }
 }
