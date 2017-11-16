@@ -8,16 +8,22 @@ import { reverseGeo } from "../../util/tride";
 export function updateGPS({ coords, timestamp }) {
   return {
     type: SELF_UPDATE_GPS,
-    coords,
-    timestamp
+    payload: {
+      coords,
+      timestamp
+    }
   };
 }
 
 export function errorUpdateGPS() {
   const timestamp = Date.now();
   return {
-    type: SELF_UPDATE_GPS_FAIL,
-    timestamp
+    type: SELF_UPDATE_GPS,
+    error: true,
+    payload: {
+      error: new Error("Error updating GPS location"),
+      timestamp
+    }
   };
 }
 
@@ -37,11 +43,13 @@ export const handleUpdateGPS = data => {
 export function updateSelfReverse(name) {
   return {
     type: SELF_REVERSE_GEO,
-    name: {
-      notAsked: false,
-      isLoading: false,
-      hasError: false,
-      data: name
+    payload: {
+      name: {
+        notAsked: false,
+        isLoading: false,
+        hasError: false,
+        data: name
+      }
     }
   };
 }
@@ -71,21 +79,14 @@ export default function reducer(state = initialState, action) {
     case SELF_UPDATE_GPS:
       return {
         ...state,
-        coords: action.coords,
-        timestamp: action.timestamp,
-        error: false
-      };
-    case SELF_UPDATE_GPS_FAIL:
-      return {
-        ...state,
-        coords: initialState.coords,
-        timestamp: action.timestamp,
-        error: true
+        coords: action.payload.coords,
+        timestamp: action.payload.timestamp,
+        error: action.error || false
       };
     case SELF_REVERSE_GEO:
       return {
         ...state,
-        name: action.name
+        name: action.payload.name
       };
     default:
       return state;
