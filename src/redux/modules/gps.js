@@ -28,6 +28,8 @@ export const handleUpdateGPS = data => {
     const { name, error } = await reverseGeo(coords);
     if (!error) {
       dispatch(updateSelfReverse(name));
+    } else {
+      console.log(error);
     }
   };
 };

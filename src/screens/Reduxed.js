@@ -33,7 +33,6 @@ class Reduxed extends Component {
         maximumAge: 1000,
         distanceFilter: 10
       });
-    console.log(this.props);
   }
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watcher);
