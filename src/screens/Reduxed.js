@@ -1,4 +1,5 @@
-// import React, { Component } from "react";
+import React, { Component } from "react";
+export default () => null;
 // import { connect } from "react-redux";
 // import {
 //   Text,
