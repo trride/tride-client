@@ -1,6 +1,14 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Card } from "react-native-elements";
+import {
+  Card,
+  ListView,
+  Text,
+  TouchableOpacity,
+  View,
+  Row,
+  Caption,
+  Spinner
+} from "@shoutem/ui";
 import styled from "styled-components/native";
 
 const SuggestionCards = ({
@@ -9,34 +17,41 @@ const SuggestionCards = ({
   onCardTap
 }) => {
   if (!!notAsked) {
-    return <View />;
+    return null;
   } else if (isLoading) {
-    return <Card title={"Loading"} />;
+    return (
+      <Row>
+        <Spinner />
+        <Text style={{ marginLeft: 24 }}>
+          {"Searching for matching destinations."}
+        </Text>
+      </Row>
+    );
   } else if (!!hasError) {
     return (
-      <Card title={"Error"}>
-        <Text>{"Error searching for destination"}</Text>
-      </Card>
+      <Row>
+        <Text>{"We're experiencing network issues while searching."}</Text>
+      </Row>
     );
   } else if (data.length < 1) {
     return (
-      <View style={style}>
-        <Card title={"No results"}>
-          <Text>{"No destination found"}</Text>
-        </Card>
-      </View>
+      <Row>
+        <Text>{"We can't find matching destination."}</Text>
+      </Row>
     );
   } else {
     return (
-      <View style={style}>
-        {data.map((place, index) => (
-          <TouchableOpacity key={index} onPress={onCardTap(place)}>
-            <Card title={place.name}>
-              <Text>{place.address}</Text>
-            </Card>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ListView
+        data={data}
+        renderRow={place => (
+          <Row>
+            <TouchableOpacity onPress={onCardTap(place)}>
+              <Text>{place.name}</Text>
+              <Caption>{place.address}</Caption>
+            </TouchableOpacity>
+          </Row>
+        )}
+      />
     );
   }
 };

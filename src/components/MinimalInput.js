@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { TextInput } from "react-native";
+import { View } from "react-native";
+import { TextInput, Title, Row, Card } from "@shoutem/ui";
 import styled from "styled-components/native";
 
-class MinimalInput extends Component {
+export default class MinimalInput extends Component {
   constructor(props) {
     super(props);
   }
@@ -10,17 +11,19 @@ class MinimalInput extends Component {
   render() {
     const { style, value, handleChangeText, placeholder } = this.props;
     return (
-      <TextInput
-        style={style}
-        placeholder={placeholder || "..."}
-        value={value || ""}
-        onChangeText={handleChangeText}
-      />
+      <View>
+        <Title
+          style={{ marginBottom: "10%", marginTop: "10%" }}
+          // styleName={"bold"}
+        >
+          Carikan saya motor menuju{" "}
+        </Title>
+        <TextInput
+          placeholder={placeholder || ""}
+          value={value || ""}
+          onChangeText={handleChangeText}
+        />
+      </View>
     );
   }
 }
-
-export default styled(MinimalInput)`
-  color: black;
-  width: 100%;
-`;

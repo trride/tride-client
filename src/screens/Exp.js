@@ -2,11 +2,17 @@ import React from "react";
 import { connect } from "react-redux";
 import { ScrollView, Keyboard, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
-import { Screen } from "@shoutem/ui";
+import { Screen, DropDownMenu } from "@shoutem/ui";
 
 import SelfPosition from "../components/SelfPosition";
+import MinimalInput from "../components/MinimalInput";
+import SuggestionCards from "../components/SuggestionCards";
 
-const MainMenuScrollView = styled(ScrollView)`background: white;`;
+import {
+  getSuggestedPlaces,
+  selectPlaceFromSuggestions,
+  findMyRide
+} from "../redux/modules/main";
 
 class Exp extends React.Component {
   render() {
@@ -19,12 +25,42 @@ class Exp extends React.Component {
         priceComparisons,
         rideId,
         rideStatus
-      }
+      },
+      dispatch
     } = this.props;
+    const { latitude, longitude } = coords;
+    const options = [
+      { title: "hey", value: "heyv" },
+      { title: "hello", value: "hellov" }
+    ];
     return (
       <Screen styleName="paper">
-        <ScrollView>
+        <ScrollView
+          style={{ padding: "10% 20%", backgroundColor: "#eee" }}
+          onPress={Keyboard.dismiss}
+          onScroll={Keyboard.dismiss}
+        >
           <SelfPosition coords={coords} name={name} />
+          <MinimalInput
+            value={searchBoxText}
+            handleChangeText={text => {
+              dispatch(getSuggestedPlaces(latitude, longitude, text));
+            }}
+          />
+          <SuggestionCards
+            suggestedPlaces={suggestedPlaces}
+            onCardTap={placeid => {
+              return () => {
+                dispatch(selectPlaceFromSuggestions(placeid));
+              };
+            }}
+          />
+          {/* <DropDownMenu
+            options={options}
+            selectedOption={options[0]}
+            titleProperty={"title"}
+            valueProperty={"value"}
+          /> */}
         </ScrollView>
       </Screen>
     );

@@ -11,9 +11,12 @@ import Exp from "./screens/Exp";
 
 import { handleUpdateGPS, errorUpdateGPS } from "./redux/modules/gps";
 
-const AppNavigator = StackNavigator({
-  MainMenuScreen: { screen: Exp }
-});
+const AppNavigator = StackNavigator(
+  {
+    MainMenuScreen: { screen: Exp }
+  },
+  { headerMode: "none" }
+);
 
 class GPS extends React.Component {
   componentDidMount() {
