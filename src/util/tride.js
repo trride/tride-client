@@ -61,4 +61,7 @@ export const manualRide = (service, key, start, end) => {
   }
 };
 
+export const deleteRideByTrideId = trideId =>
+  tride(`rides/${trideId}`, { method: "DELETE" });
+
 export const getFastest = (services, itinerary) => {};

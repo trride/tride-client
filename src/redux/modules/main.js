@@ -3,7 +3,8 @@ const {
   findCoordsFromPOI,
   getPriceComparisons,
   manualRide,
-  getFastest
+  getFastest,
+  deleteRideByTrideId
 } = require("../../util/tride");
 
 const SELECT_PLACE_FROM_SUGGESTIONS = "@tride/SELECT_PLACE_FROM_SUGGESTIONS";
@@ -307,6 +308,12 @@ export function findMyRide({ service, key }) {
     } catch (err) {
       dispatch(requestRideFail(err));
     }
+  };
+}
+
+export function cancelRide(trideId) {
+  return async (dispatch, getState) => {
+    await deleteRideByTrideId(trideId);
   };
 }
 

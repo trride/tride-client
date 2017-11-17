@@ -9,11 +9,13 @@ import MinimalInput from "../components/MinimalInput";
 import SuggestionCards from "../components/SuggestionCards";
 import OrderButtons from "../components/OrderButtons";
 import RideStatus from "../components/RideStatus";
+import Ride from "../components/Ride";
 
 import {
   getSuggestedPlaces,
   selectPlaceFromSuggestions,
-  findMyRide
+  findMyRide,
+  cancelRide
 } from "../redux/modules/main";
 
 class Exp extends React.Component {
@@ -76,17 +78,12 @@ class Exp extends React.Component {
             titleProperty={"title"}
             valueProperty={"value"}
           /> */}
-            {!rideData.notAsked &&
-              !rideData.isLoading &&
-              !rideData.hasError && (
-                <View>
-                  <Caption>
-                    Your order: {rideData.data.service} -{" "}
-                    {rideData.data.requestId}. Tride ID: {rideData.data.trideId}
-                  </Caption>
-                  <RideStatus trideId={rideData.data.trideId} />
-                </View>
-              )}
+            <Ride
+              rideData={rideData}
+              cancel={() => {
+                dispatch(cancelRide(rideData.data.trideId));
+              }}
+            />
           </View>
         </ScrollView>
       </Screen>
