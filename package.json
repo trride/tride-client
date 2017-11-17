@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@shoutem/ui": "^0.21.3",
-    "expo": "^21.0.0",
+    "expo": "^23.0.0",
     "firebase": "^4.6.2",
     "p-debounce": "^1.0.0",
     "react": "16.0.0-alpha.12",

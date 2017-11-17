@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tride Beta",
     "slug": "tride-beta",
-    "sdkVersion": "22.0.0",
+    "sdkVersion": "23.0.0",
     "privacy": "unlisted",
     "android": {
       "package": "com.tride.beta"
