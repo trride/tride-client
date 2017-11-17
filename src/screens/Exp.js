@@ -7,6 +7,7 @@ import { Screen, DropDownMenu } from "@shoutem/ui";
 import SelfPosition from "../components/SelfPosition";
 import MinimalInput from "../components/MinimalInput";
 import SuggestionCards from "../components/SuggestionCards";
+import OrderButtons from "../components/OrderButtons";
 
 import {
   getSuggestedPlaces,
@@ -36,31 +37,37 @@ class Exp extends React.Component {
     return (
       <Screen styleName="paper">
         <ScrollView
-          style={{ padding: "10% 20%", backgroundColor: "#eee" }}
+          style={{ backgroundColor: "#eee" }}
           onPress={Keyboard.dismiss}
           onScroll={Keyboard.dismiss}
         >
-          <SelfPosition coords={coords} name={name} />
-          <MinimalInput
-            value={searchBoxText}
-            handleChangeText={text => {
-              dispatch(getSuggestedPlaces(latitude, longitude, text));
-            }}
-          />
-          <SuggestionCards
-            suggestedPlaces={suggestedPlaces}
-            onCardTap={placeid => {
-              return () => {
-                dispatch(selectPlaceFromSuggestions(placeid));
-              };
-            }}
-          />
-          {/* <DropDownMenu
+          <View style={{ padding: "10% 20%" }}>
+            <SelfPosition coords={coords} name={name} />
+            <MinimalInput
+              value={searchBoxText}
+              handleChangeText={text => {
+                dispatch(getSuggestedPlaces(latitude, longitude, text));
+              }}
+            />
+            <SuggestionCards
+              suggestedPlaces={suggestedPlaces}
+              onCardTap={placeid => {
+                return () => {
+                  dispatch(selectPlaceFromSuggestions(placeid));
+                };
+              }}
+            />
+            <OrderButtons
+              selectedPlace={selectedPlace}
+              priceComparisons={priceComparisons}
+            />
+            {/* <DropDownMenu
             options={options}
             selectedOption={options[0]}
             titleProperty={"title"}
             valueProperty={"value"}
           /> */}
+          </View>
         </ScrollView>
       </Screen>
     );
