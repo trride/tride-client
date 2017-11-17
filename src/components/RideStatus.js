@@ -9,10 +9,12 @@ export default class RideStatus extends Component {
   state = {
     rideStatus: {}
   };
-  componentDidMount() {
+  async componentDidMount() {
     const { trideId } = this.props;
-    this.ref = database.ref(`rides/${trideId}`).on("value");
-    this.ref.once("value", async snapshot => {
+    console.log("rideStatus mounted");
+    this.ref = await database.ref(`rides/${trideId}`);
+    console.log(this.ref);
+    this.ref.on("value", async snapshot => {
       const val = await snapshot.val();
       console.log(val);
       this.setState({ rideStatus: val });
@@ -24,7 +26,7 @@ export default class RideStatus extends Component {
     return (
       <View>
         <Title style={{ marginBottom: "10%", marginTop: "10%" }}>
-          ORDER STATUS: {rideStatus.status}
+          ORDER STATUS: {rideStatus.status || null}
         </Title>
       </View>
     );
