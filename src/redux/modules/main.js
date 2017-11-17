@@ -60,7 +60,7 @@ const initialState = {
     data: [],
     hasError: false
   },
-  rideId: {
+  rideData: {
     notAsked: true,
     isLoading: false,
     data: {},
@@ -182,19 +182,17 @@ export function requestRide() {
   };
 }
 
-export function requestRideSuccess(rideId) {
+export function requestRideSuccess(rideData) {
   return {
     type: REQUEST_RIDE_SUCCESS,
-    rideId: {
-      data: rideId
-    }
+    payload: rideData
   };
 }
 
 export function requestRideFail(err) {
   return {
     type: REQUEST_RIDE_ERROR,
-    rideId: {
+    rideData: {
       hasError: err
     }
   };
@@ -295,16 +293,20 @@ export function findMyRide({ service, key }) {
     const { gps: { coords }, main: { selectedPlace } } = getState();
     dispatch(dismissPriceComparisons());
     dispatch(requestRide());
-    const { requestId } = await manualRide(
-      service,
-      key,
-      { latitude: coords.latitude, longitude: coords.longitude },
-      {
-        latitude: selectedPlace.data.latitude,
-        longitude: selectedPlace.data.longitude
-      }
-    );
-    dispatch(requestRideSuccess(requestId));
+    try {
+      const data = await manualRide(
+        service,
+        key,
+        { latitude: coords.latitude, longitude: coords.longitude },
+        {
+          latitude: selectedPlace.data.latitude,
+          longitude: selectedPlace.data.longitude
+        }
+      );
+      dispatch(requestRideSuccess(data));
+    } catch (err) {
+      dispatch(requestRideFail(err));
+    }
   };
 }
 
@@ -423,8 +425,8 @@ export default function reducer(state = initialState, action) {
     case REQUEST_RIDE:
       return {
         ...state,
-        rideId: {
-          ...initialState.rideId,
+        rideData: {
+          ...initialState.rideData,
           notAsked: false,
           isLoading: true
         }
@@ -432,25 +434,25 @@ export default function reducer(state = initialState, action) {
     case REQUEST_RIDE_SUCCESS:
       return {
         ...state,
-        rideId: {
-          ...initialState.rideId,
+        rideData: {
+          ...initialState.rideData,
           notAsked: false,
-          data: action.rideId.data
+          data: action.payload
         }
       };
     case REQUEST_RIDE_ERROR:
       return {
         ...state,
-        rideId: {
-          ...initialState.rideId,
+        rideData: {
+          ...initialState.rideData,
           notAsked: false,
-          hasError: action.rideId.hasError
+          hasError: action.rideData.hasError
         }
       };
     case REQUEST_RIDE_DISMISS:
       return {
         ...state,
-        rideId: initialState.rideId
+        rideData: initialState.rideData
       };
 
     case UPDATE_RIDE_STATUS:

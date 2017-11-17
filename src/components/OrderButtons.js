@@ -15,69 +15,7 @@ import {
   GridRow
 } from "@shoutem/ui";
 
-const renderPriceRow = (rowData, sectionId, index) => {
-  if (index === "0") {
-    return (
-      <View style={{ backgroundColor: "#eee", marginTop: "10%" }}>
-        <Image
-          styleName="featured"
-          style={{ width: "100%" }}
-          source={{
-            uri: "https://shoutem.github.io/img/ui-toolkit/examples/image-2.png"
-          }}
-        >
-          <Tile>
-            <Title>Cheapest: {rowData[0].service}</Title>
-            <Subtitle styleName="sm-gutter-top">{rowData[0].price}</Subtitle>
-            <Button styleName="md-gutter-top">
-              <Text>Order cheapest: {rowData[0].service}</Text>
-            </Button>
-          </Tile>
-        </Image>
-      </View>
-    );
-  }
-  const cellViews = rowData.map(
-    ({ service, price, cheapest, requestKey: { key } }) => (
-      <View style={{ backgroundColor: "#eee", marginTop: "10%" }} key={key}>
-        <Image
-          styleName={"large-portrait"}
-          style={{ width: "100%" }}
-          source={{
-            uri: "https://shoutem.github.io/img/ui-toolkit/examples/image-3.png"
-          }}
-        >
-          <Tile>
-            <Title>{service}</Title>
-            <Heading>{price}</Heading>
-            <Button styleName="md-gutter-top">
-              <Text>Order {service}</Text>
-            </Button>
-          </Tile>
-        </Image>
-      </View>
-      //   <View style={{ backgroundColor: "#eee", marginTop: "10%" }} key={key}>
-      // <Image
-      //   style={{ width: "100%" }}
-      //   source={{
-      //     uri: "https://shoutem.github.io/img/ui-toolkit/examples/image-9.png"
-      //   }}
-      // >
-      //     <Tile>
-      //       <Title>{service}</Title>
-      //       <Heading>{price}</Heading>
-      //       <Button styleName="md-gutter-top">
-      //         <Text>Order {service}</Text>
-      //       </Button>
-      //     </Tile>
-      //   </Image>
-      //   </View>
-    )
-  );
-  return <GridRow columns={2}>{cellViews}</GridRow>;
-};
-
-export default ({ selectedPlace, priceComparisons }) => {
+export default ({ selectedPlace, priceComparisons, manualRequest }) => {
   let isFirst = true;
   const groupedData =
     !priceComparisons.notAsked &&
@@ -91,6 +29,62 @@ export default ({ selectedPlace, priceComparisons }) => {
       return 1;
     });
 
+  const renderPriceRow = (rowData, sectionId, index) => {
+    if (index === "0") {
+      return (
+        <View style={{ backgroundColor: "#eee", marginTop: "10%" }}>
+          <Image
+            styleName="featured"
+            style={{ width: "100%" }}
+            source={{
+              uri:
+                "https://shoutem.github.io/img/ui-toolkit/examples/image-2.png"
+            }}
+          >
+            <Tile>
+              <Title>Cheapest: {rowData[0].service}</Title>
+              <Subtitle styleName="sm-gutter-top">{rowData[0].price}</Subtitle>
+              <Button
+                styleName="md-gutter-top"
+                onPress={manualRequest(
+                  rowData[0].service,
+                  rowData[0].requestKey.key
+                )}
+              >
+                <Text>Order cheapest: {rowData[0].service}</Text>
+              </Button>
+            </Tile>
+          </Image>
+        </View>
+      );
+    }
+    const cellViews = rowData.map(
+      ({ service, price, cheapest, requestKey: { key } }) => (
+        <View style={{ backgroundColor: "#eee", marginTop: "10%" }} key={key}>
+          <Image
+            styleName={"large-portrait"}
+            style={{ width: "100%" }}
+            source={{
+              uri:
+                "https://shoutem.github.io/img/ui-toolkit/examples/image-3.png"
+            }}
+          >
+            <Tile>
+              <Title>{service}</Title>
+              <Heading>{price}</Heading>
+              <Button
+                styleName="md-gutter-top"
+                onPress={manualRequest(service, key)}
+              >
+                <Text>Order {service}</Text>
+              </Button>
+            </Tile>
+          </Image>
+        </View>
+      )
+    );
+    return <GridRow columns={2}>{cellViews}</GridRow>;
+  };
   return (
     !selectedPlace.notAsked && (
       <View style={{ backgroundColor: "#eee", marginTop: "10%" }}>

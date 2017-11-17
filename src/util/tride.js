@@ -15,6 +15,7 @@ const tride = (endpoint, opts = {}) => {
     })
     .catch(err => {
       console.log("errored");
+      console.log(err);
       return { error: { message: err.message } };
     });
 };
@@ -41,10 +42,14 @@ export const reverseGeo = ({ latitude, longitude }) =>
 export const manualRide = (service, key, start, end) => {
   const payload = {
     requestKey: { key },
-    itinerary: { start, end }
+    itinerary: {
+      start: { lat: start.latitude, long: start.longitude },
+      end: { lat: end.latitude, long: end.longitude }
+    }
   };
+  console.log(payload);
   const opts = {
-    method: "POST",
+    method: "post",
     body: JSON.stringify(payload)
   };
   const services = ["gojek", "grab", "uber"];
